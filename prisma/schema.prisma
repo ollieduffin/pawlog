@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id  String  @id @default(cuid())
+  name  String 
+  email String  @unique
+  password String?
+  pets Pet[]
+  createdAt DateTime @default(now())
+}
+
+model Pet {
+  id String @id @default(cuid())
+  name String
+  species String
+  breed String?
+  dateOfBirth DateTime?
+  owner User @relation(fields: [ownerId], references: [id])
+  ownerId String
+  logs LogEntry[]
+  reminders Reminder[]
+  createdAt DateTime @default(now())
+}
+
+enum LogType {
+  FEEDING
+  SYMPTOM
+  TRAINING
+  WEIGHT
+  NOTE
+}
+
+model LogEntry {
+  id String @id @default(cuid())
+  pet Pet @relation(fields: [petId], references: [id])
+  petId String
+  type LogType
+  value String?
+  notes String?
+  createdAt DateTime @default(now())
+}
+
+model Reminder {
+  id String @id @default(cuid())
+  pet Pet @relation(fields: [petId], references: [id])
+  petId String
+  title String
+  dueDate DateTime
+  recurring Boolean @default(false)
+  recurrenceRule String?
+  completed Boolean @default(false)
+  createdAt DateTime @default(now())
+}
