@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials"
 
 import prisma from "./lib/prisma";
 
-import { credentialsSchema } from "./lib/validation"; 
+import { loginSchema } from "./lib/validation"; 
 
 import bcrypt from "bcryptjs";
 
@@ -18,7 +18,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
             authorize: async (credentials) => {
 
-                const result = credentialsSchema.safeParse(credentials)
+                const result = loginSchema.safeParse(credentials)
 
                 if(!result.success){
                     throw new Error("Invalid credentials")

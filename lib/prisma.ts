@@ -1,11 +1,14 @@
-import { PrismaClient } from "../app/generated/prisma";
+import { PrismaClient } from "../app/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 //Allowing for next.js hot reloading
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const prisma = globalForPrisma.prisma ?? new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+
+const prisma = globalForPrisma.prisma ?? new PrismaClient({adapter});
 
 //No hot reloading on live
 if (process.env.NODE_ENV !== "production") {

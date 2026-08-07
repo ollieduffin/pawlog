@@ -1,5 +1,5 @@
-import { credentialsSchema } from "../../../lib/validation";
-import { Prisma } from "../../generated/prisma";
+import { signupSchema } from "../../../lib/validation";
+import { Prisma } from "../../generated/prisma/client";
 import { NextResponse } from "next/server";
 
 import bcrypt from "bcryptjs";
@@ -9,7 +9,7 @@ import prisma from "../../../lib/prisma";
 export async function POST(request: Request){
     const body = await request.json();
 
-    const result = credentialsSchema.safeParse(body)
+    const result = signupSchema.safeParse(body)
 
     if(!result.success){
         return NextResponse.json(
@@ -25,12 +25,13 @@ export async function POST(request: Request){
         const user = await prisma.user.create({
             data: {
                 email: result.data.email,
+                name: result.data.name,
                 password: hash
             }
         })
             
         return NextResponse.json(
-            {id: user.id, email: user.email},
+            {id: user.id, name: user.name, email: user.email},
             {status: 201}
         )
     } catch (e) {
