@@ -13,6 +13,7 @@ export default function SignupForm (){
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
+    
     async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         const url = "/api/signup";
