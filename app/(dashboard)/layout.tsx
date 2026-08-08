@@ -1,0 +1,19 @@
+import type { Metadata } from "next";
+
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+
+export const metadata: Metadata = {
+  title: "Dashboard - PawLog",
+};
+
+export default async function DashboardLayout({ children }: LayoutProps<"/">) {
+    const session = await auth();
+
+    if(!session){
+        redirect('/login')
+    }
+    
+
+    return (<>{children}</>);
+}
