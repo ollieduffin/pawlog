@@ -17,3 +17,10 @@ export const petSchema = z.object({
     breed: z.string().min(1).optional(),
     dateOfBirth: z.iso.datetime().optional(),
 })
+
+export const petPatchSchema = z.object({
+    name: z.string().min(1).optional(),
+    species: z.string().min(1).optional(),
+    breed: z.string().min(1).optional(),
+    dateOfBirth: z.iso.datetime().optional(),
+})
