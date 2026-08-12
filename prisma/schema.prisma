@@ -21,7 +21,7 @@ model Pet {
   name String
   species String
   breed String?
-  dateOfBirth DateTime?
+  dateOfBirth DateTime? @db.Date
   owner User @relation(fields: [ownerId], references: [id])
   ownerId String
   logs LogEntry[]

@@ -23,7 +23,6 @@ export async function GET(){
 
 export async function POST(request: Request) {
     const session = await auth();
-
     if(!session){
         return NextResponse.json(
             {error: "Access denied"},
@@ -41,11 +40,16 @@ export async function POST(request: Request) {
             {status: 400}
         )
     }
+    let dateOfBirth = null;
+    if(result.data.dateOfBirth){
+        dateOfBirth = new Date(result.data.dateOfBirth);
+    }
     try{
         const pet = await prisma.pet.create({
             data: { 
-                ...result.data, 
-                ownerId: session.user.id 
+                ...result.data,
+                dateOfBirth: dateOfBirth, 
+                owner: { connect: {id: session.user.id}}
             },
         })
 

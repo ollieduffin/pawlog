@@ -1,6 +1,6 @@
 interface FormInputProps {
     label: string;
-    type: "text" | "email" | "password";
+    type: "text" | "email" | "password" | "date";
     value: string;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
