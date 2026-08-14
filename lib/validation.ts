@@ -14,13 +14,13 @@ export const loginSchema = z.object({
 export const petSchema = z.object({
     name: z.string().min(1),
     species: z.string().min(1),
-    breed: z.string().min(1).optional(),
-    dateOfBirth: z.iso.date().optional(),
+    breed: z.optional(z.string().min(1)),
+    dateOfBirth: z.optional(z.iso.date()),
 })
 
 export const petPatchSchema = z.object({
-    name: z.string().min(1).optional(),
-    species: z.string().min(1).optional(),
-    breed: z.string().min(1).optional(),
-    dateOfBirth: z.iso.date().optional(),
+    name: z.optional(z.string().min(1)),
+    species: z.optional(z.string().min(1)),
+    breed: z.optional(z.string().min(1)),
+    dateOfBirth: z.optional(z.iso.date()),
 })

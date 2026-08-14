@@ -35,6 +35,7 @@ export async function POST(request: Request) {
     const result = petSchema.safeParse(body);
 
     if(!result.success){
+        console.error(result);
        return NextResponse.json(
             {error: "Invalid pet data"},
             {status: 400}

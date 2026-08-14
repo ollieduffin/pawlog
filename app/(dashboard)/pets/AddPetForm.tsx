@@ -3,6 +3,7 @@ import FormInput from "@/app/components/FormInput";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 export default function AddPetForm (){
@@ -12,8 +13,7 @@ export default function AddPetForm (){
     const [breed, setBreed] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-
-    const router = useRouter();
+    const queryClient = useQueryClient();
     const mutation = useMutation({
         mutationFn: async (addPet: object) => {
             const url = '/api/pets';
@@ -30,7 +30,7 @@ export default function AddPetForm (){
             }
         },
         onSuccess: () => {
-            router.push('/');
+            queryClient.invalidateQueries({ queryKey: ["pets"] })
         },
         onError: (error)=>{
             setErrorMessage(error.message);
@@ -40,7 +40,7 @@ export default function AddPetForm (){
     
     async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
-        mutation.mutate({name: name, species: species, breed: breed, dateOfBirth: dateOfBirth})
+        mutation.mutate({name: name, species: species, breed: breed || undefined, dateOfBirth: dateOfBirth || undefined})
     }
 
     return(
