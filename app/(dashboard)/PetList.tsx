@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { Pet } from "@/app/generated/prisma/client";
+import { ClientPet } from "@/lib/types";
 import PetListItem from "./PetListItem";
 export default function PetList({}){
     const {data, isError, isPending, error} = useQuery({
@@ -22,7 +22,7 @@ export default function PetList({}){
     console.log(data);
     return (
         <ul>
-            {data.pets.map((pet:Pet) => <PetListItem key={pet.id} pet={pet} />)}
+            {data.pets.map((pet:ClientPet) => <PetListItem key={pet.id} pet={pet} />)}
         </ul>
     )
 }
