@@ -1,4 +1,4 @@
-import AddPetForm from "./pets/AddPetForm";
+import AddPetForm from "./AddPetForm";
 import PetList from "./PetList";
 export default function DashboardPage() {
   return (

@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { petPatchSchema } from "@/lib/validation";
 
-export async function GET( { params }: RouteContext<'/api/pets/[petId]'>) {
+export async function GET( request: Request, { params }: RouteContext<'/api/pets/[petId]'>) {
     const { petId } = await params;
     const session = await auth();
 
@@ -55,7 +55,7 @@ export async function GET( { params }: RouteContext<'/api/pets/[petId]'>) {
 
 }
 
-export async function DELETE( { params }: RouteContext<'/api/pets/[petId]'>) {
+export async function DELETE( request: Request, { params }: RouteContext<'/api/pets/[petId]'>) {
     const { petId } = await params;
     const session = await auth();
 
@@ -96,7 +96,7 @@ export async function DELETE( { params }: RouteContext<'/api/pets/[petId]'>) {
         }
         await prisma.pet.delete({where: {id: petId}})
         
-        return NextResponse.json(
+        return new NextResponse(
             null,
             {status: 204}
         ) 
@@ -145,6 +145,11 @@ export async function PATCH(request: Request, { params }: RouteContext<'/api/pet
         )
     }
 
+    let dateOfBirth = null;
+    if(result.data.dateOfBirth){
+        dateOfBirth = new Date(result.data.dateOfBirth);
+    }
+
     try{
         const pet = await prisma.pet.findUnique({where: {id: petId}})
         if(!pet || !pet.ownerId){
@@ -174,7 +179,8 @@ export async function PATCH(request: Request, { params }: RouteContext<'/api/pet
     try{
         const updatePet = await prisma.pet.update({
             where: {id: petId},
-            data: {...result.data}
+            data: {...result.data,
+                dateOfBirth: dateOfBirth}
         })
 
         return NextResponse.json(

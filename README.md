@@ -26,6 +26,8 @@ User -> Pet -> LogEntry
 
 ## Future Improvements
 
+- **Shared confirmation dialog for pet deletion** — each `PetListItem` currently renders its own `<dialog>` for delete confirmation, which is simple and keeps each item self-contained, but doesn't scale well if a user's pet list grows large (many inert DOM nodes). At scale, a single shared dialog owned by `PetList`, driven by a "currently selected pet" piece of state, would be more efficient — deferred for now since it adds state-lifting complexity that isn't justified by this app's realistic pet-list size.
+
 ## Testing
 
 ## Local Instructions
