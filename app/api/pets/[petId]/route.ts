@@ -165,18 +165,6 @@ export async function PATCH(request: Request, { params }: RouteContext<'/api/pet
             ) 
         }
 
-        
-        
-
-
-    } catch (e){
-        return NextResponse.json(
-            {error: "Server error"},
-            {status: 500}
-        )
-    }
-
-    try{
         const updatePet = await prisma.pet.update({
             where: {id: petId},
             data: {...result.data,
@@ -187,11 +175,13 @@ export async function PATCH(request: Request, { params }: RouteContext<'/api/pet
             {updatePet: updatePet},
             {status: 200}
         )
-    }catch (e){
+
+    } catch (e){
         return NextResponse.json(
             {error: "Server error"},
             {status: 500}
         )
     }
+
 
 }
