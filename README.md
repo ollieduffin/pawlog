@@ -17,10 +17,17 @@ I built this after adopting a puppy and wanting a single place to track feeding,
 ## Data Model
 
 ```
-User -> Pet -> LogEntry
-            -> Reminder
-            -> Breed
+User
+ ├─ id, name, email, password?
+ └─ Pet[] (owner)
+     ├─ id, name, species, breed?, dateOfBirth?
+     ├─ LogEntry[]
+     │   └─ id, type (FEEDING | SYMPTOM | TRAINING | WEIGHT | NOTE), value?, notes?, createdAt
+     └─ Reminder[]
+         └─ id, title, dueDate, recurring, recurrenceRule?, completed
 ```
+
+Every `Pet` belongs to exactly one `User`; every `LogEntry`/`Reminder` belongs to exactly one `Pet`. Ownership checks on every API route walk this chain — a log or reminder is only accessible if the pet it belongs to is owned by the requesting user.
 
 ## Decision Notes
 
