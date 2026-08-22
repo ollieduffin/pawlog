@@ -72,6 +72,7 @@ export async function PATCH( request: Request, { params }: RouteContext<'/api/pe
 
         //no error handling, delete throws on its own
 
+        console.log(updateLog)
         return NextResponse.json(
             {log: updateLog},
             {status: 200}

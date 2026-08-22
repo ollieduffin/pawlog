@@ -19,7 +19,7 @@ export default function PetList({}){
     if(isError){
         return <span>Error: {error.message}</span>
     }
-    console.log(data);
+
     return (
         <ul>
             {data.pets.map((pet:ClientPet) => <PetListItem key={pet.id} pet={pet} />)}

@@ -2,6 +2,8 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
+import AddLogForm from "./AddLogForm";
+import LogList from "./LogList";
 
 
 export default async function Page({ params }: PageProps<'/pets/[petId]'>) {
@@ -24,11 +26,20 @@ export default async function Page({ params }: PageProps<'/pets/[petId]'>) {
 
     return(
         <div>
-            <h1>{pet.name}</h1>
-            <p>{pet.species}</p>
-            {pet.breed && <p>{pet.breed}</p>}
-            {pet.dateOfBirth && <p>{pet.dateOfBirth.toLocaleString().split(',')[0]}</p>}
+            <div>
+                <h1>{pet.name}</h1>
+                <p>{pet.species}</p>
+                {pet.breed && <p>{pet.breed}</p>}
+                {pet.dateOfBirth && <p>{pet.dateOfBirth.toLocaleString().split(',')[0]}</p>}
+            </div>
+            <div>
+                <AddLogForm petId={petId} />
+            </div>
+            <div>
+                <LogList petId={petId} />
+            </div>
         </div>
+        
     )
 
 }
