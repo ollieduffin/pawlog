@@ -1,11 +1,11 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { logEntryPatchSchema } from "@/lib/validation";
+import { reminderSchema } from "@/lib/validation";
 
-export async function PATCH( request: Request, { params }: RouteContext<'/api/pets/[petId]/logs/[logId]'> ){
+export async function POST( request: Request, { params }: RouteContext<'/api/pets/[petId]/reminders'> ){
     const session = await auth();
-    const {petId, logId} = await params;
+    const {petId} = await params;
 
     if(!session){
         return NextResponse.json(
@@ -28,23 +28,18 @@ export async function PATCH( request: Request, { params }: RouteContext<'/api/pe
         )
     }
 
-    if(typeof logId !== "string"){
-        return NextResponse.json(
-            {error: "LogId not valid"},
-            {status: 400}
-        )
-    }
+    const body = await request.json()
 
-    const body = await request.json();
-
-    const result = logEntryPatchSchema.safeParse(body);
+    const result = reminderSchema.safeParse(body);
 
     if(!result.success){
         return NextResponse.json(
-            {error: "Invalid log data"},
-            {status: 400}
-        )
+                {error: "Reminder entry not valid"},
+                {status: 400}
+            )
     }
+    
+    const dueDate = new Date(result.data.dueDate);
 
     try{
         const pet = await prisma.pet.findUnique({
@@ -60,21 +55,16 @@ export async function PATCH( request: Request, { params }: RouteContext<'/api/pe
             )
         }
 
-        const updateLog = await prisma.logEntry.update({
-            where: {
-                id: logId,
-                petId: petId
-            },
+        const reminder = await prisma.reminder.create({
             data: {
-                ...result.data
+                ...result.data,
+                dueDate: dueDate,
+                pet: { connect: {id: pet.id}}
             }
         })
 
-        //no error handling, update throws on its own
-
-        console.log(updateLog)
         return NextResponse.json(
-            {log: updateLog},
+            {reminder: reminder},
             {status: 200}
         )
        
@@ -86,9 +76,10 @@ export async function PATCH( request: Request, { params }: RouteContext<'/api/pe
     }
 }
 
-export async function DELETE( request: Request, { params }: RouteContext<'/api/pets/[petId]/logs/[logId]'> ){
+
+export async function GET( request: Request, { params }: RouteContext<'/api/pets/[petId]/reminders'> ){
     const session = await auth();
-    const {petId, logId} = await params;
+    const {petId} = await params;
 
     if(!session){
         return NextResponse.json(
@@ -111,18 +102,14 @@ export async function DELETE( request: Request, { params }: RouteContext<'/api/p
         )
     }
 
-    if(typeof logId !== "string"){
-        return NextResponse.json(
-            {error: "LogId not valid"},
-            {status: 400}
-        )
-    }
-
     try{
         const pet = await prisma.pet.findUnique({
             where: {
                 id: petId,
                 ownerId: session.user.id
+            },
+            include: {
+                reminders: true
             }
         })
         if(!pet){
@@ -132,17 +119,8 @@ export async function DELETE( request: Request, { params }: RouteContext<'/api/p
             )
         }
 
-        const deleteLog = await prisma.logEntry.delete({
-            where: {
-                id: logId,
-                petId: petId
-            }
-        })
-
-        //no error handling, delete throws on its own
-
         return NextResponse.json(
-            {log: deleteLog},
+            {pet: pet},
             {status: 200}
         )
        

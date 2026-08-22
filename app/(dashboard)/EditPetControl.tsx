@@ -36,7 +36,7 @@ export default function EditPetControl({pet}: EditPetControlProps){
             return response.json();
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["pets"] })
+            queryClient.invalidateQueries({ queryKey: ["reminder", pet.id]})
         },
         onError: (error) => {
             setErrorMessage(error.message);

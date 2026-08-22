@@ -13,7 +13,14 @@ interface InputProps{
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-type FormInputProps = SelectProps | InputProps
+interface CheckboxProps{
+    label: string;
+    type: "checkbox";
+    value: boolean;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+type FormInputProps = SelectProps | InputProps | CheckboxProps
 
 
 
@@ -26,6 +33,15 @@ export default function FormInput(props: FormInputProps) {
                     {props.options.map((option) => <option key={option} value={option}>{option}</option>) }
                 </select>
             </div>
+        )
+    }
+
+    if(props.type == "checkbox"){
+        return(
+        <div>
+            <label>{props.label}</label>
+            <input type={props.type} checked={props.value} onChange={props.onChange} /> 
+        </div>
         )
     }
 

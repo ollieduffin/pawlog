@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import AddLogForm from "./AddLogForm";
 import LogList from "./LogList";
+import AddReminderForm from "../../AddReminderForm";
+import ReminderList from "../../ReminderList";
 
 
 export default async function Page({ params }: PageProps<'/pets/[petId]'>) {
@@ -37,6 +39,12 @@ export default async function Page({ params }: PageProps<'/pets/[petId]'>) {
             </div>
             <div>
                 <LogList petId={petId} />
+            </div>
+             <div>
+                <AddReminderForm petId={petId} />
+            </div>
+            <div>
+                <ReminderList petId={petId} />
             </div>
         </div>
         

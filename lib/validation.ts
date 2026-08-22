@@ -36,3 +36,15 @@ export const logEntryPatchSchema = z.object(({
     value: z.optional(z.string().min(1)),
     notes: z.optional(z.string().min(1))
 }))
+
+export const reminderSchema = z.object(({
+    title: z.string().min(1),
+    dueDate: z.iso.date(),
+}))
+
+export const reminderPatchSchema = z.object(({
+    title: z.optional(z.string().min(1)),
+    dueDate: z.optional(z.iso.date()),
+    completed: z.optional(z.boolean()),
+}))
+

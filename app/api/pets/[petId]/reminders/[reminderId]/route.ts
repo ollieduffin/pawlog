@@ -1,11 +1,12 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { logEntryPatchSchema } from "@/lib/validation";
+import { reminderPatchSchema } from "@/lib/validation";
+import { z } from "zod";
 
-export async function PATCH( request: Request, { params }: RouteContext<'/api/pets/[petId]/logs/[logId]'> ){
+export async function PATCH( request: Request, { params }: RouteContext<'/api/pets/[petId]/reminders/[reminderId]'> ){
     const session = await auth();
-    const {petId, logId} = await params;
+    const {petId, reminderId} = await params;
 
     if(!session){
         return NextResponse.json(
@@ -28,20 +29,20 @@ export async function PATCH( request: Request, { params }: RouteContext<'/api/pe
         )
     }
 
-    if(typeof logId !== "string"){
+    if(typeof reminderId !== "string"){
         return NextResponse.json(
-            {error: "LogId not valid"},
+            {error: "reminderId not valid"},
             {status: 400}
         )
     }
 
     const body = await request.json();
 
-    const result = logEntryPatchSchema.safeParse(body);
+    const result = reminderPatchSchema.safeParse(body);
 
     if(!result.success){
         return NextResponse.json(
-            {error: "Invalid log data"},
+            {error: "Invalid reminder data"},
             {status: 400}
         )
     }
@@ -60,21 +61,29 @@ export async function PATCH( request: Request, { params }: RouteContext<'/api/pe
             )
         }
 
-        const updateLog = await prisma.logEntry.update({
+        const { dueDate: rawDueDate, ...rest } = result.data;
+
+
+        // same shape as reminderPatchSchema's validated output, but dueDate is Date (not string) since Prisma needs a real Date object
+        const data: Omit<z.infer<typeof reminderPatchSchema>, "dueDate"> & {dueDate?: Date} = {...rest};
+        
+        if(rawDueDate){
+            data.dueDate = new Date(rawDueDate);
+        }
+        
+
+        const updateReminder = await prisma.reminder.update({
             where: {
-                id: logId,
+                id: reminderId,
                 petId: petId
             },
-            data: {
-                ...result.data
-            }
+            data: data
         })
 
         //no error handling, update throws on its own
 
-        console.log(updateLog)
         return NextResponse.json(
-            {log: updateLog},
+            {reminder: updateReminder},
             {status: 200}
         )
        
@@ -86,9 +95,9 @@ export async function PATCH( request: Request, { params }: RouteContext<'/api/pe
     }
 }
 
-export async function DELETE( request: Request, { params }: RouteContext<'/api/pets/[petId]/logs/[logId]'> ){
+export async function DELETE( request: Request, { params }: RouteContext<'/api/pets/[petId]/reminders/[reminderId]'> ){
     const session = await auth();
-    const {petId, logId} = await params;
+    const {petId, reminderId} = await params;
 
     if(!session){
         return NextResponse.json(
@@ -111,9 +120,9 @@ export async function DELETE( request: Request, { params }: RouteContext<'/api/p
         )
     }
 
-    if(typeof logId !== "string"){
+    if(typeof reminderId !== "string"){
         return NextResponse.json(
-            {error: "LogId not valid"},
+            {error: "reminderId not valid"},
             {status: 400}
         )
     }
@@ -132,9 +141,9 @@ export async function DELETE( request: Request, { params }: RouteContext<'/api/p
             )
         }
 
-        const deleteLog = await prisma.logEntry.delete({
+        const deleteReminder = await prisma.reminder.delete({
             where: {
-                id: logId,
+                id: reminderId,
                 petId: petId
             }
         })
@@ -142,7 +151,7 @@ export async function DELETE( request: Request, { params }: RouteContext<'/api/p
         //no error handling, delete throws on its own
 
         return NextResponse.json(
-            {log: deleteLog},
+            {reminder: deleteReminder},
             {status: 200}
         )
        
